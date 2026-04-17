@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "740617122320",
+    "firebase_url": "https://projecttubesapb-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "projecttubesapb",
+    "storage_bucket": "projecttubesapb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740617122320:android:bf86d2c0601b3085bfd095",
+        "android_client_info": {
+          "package_name": "com.example.project_tubes_apb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvW8gbux9sjV57ocWErZam52h2-x5SSCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
