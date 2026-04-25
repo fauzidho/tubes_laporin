@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/app_colors.dart';
 import 'features/home/home_screen.dart';
+import 'features/report/feed_screen.dart';
 import 'features/report/my_reports_screen.dart';
 import 'features/profile/profile_screen.dart';
 
@@ -17,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
+    FeedScreen(),
     MyReportsScreen(),
     ProfileScreen(),
   ];
@@ -60,12 +62,19 @@ class _MainScreenState extends State<MainScreen> {
               _NavItem(
                 index: 1,
                 currentIndex: _currentIndex,
+                icon: Icons.explore_rounded,
+                label: 'Feed',
+                onTap: (i) => setState(() => _currentIndex = i),
+              ),
+              _NavItem(
+                index: 2,
+                currentIndex: _currentIndex,
                 icon: Icons.assignment_rounded,
                 label: 'Laporan',
                 onTap: (i) => setState(() => _currentIndex = i),
               ),
               _NavItem(
-                index: 2,
+                index: 3,
                 currentIndex: _currentIndex,
                 icon: Icons.person_rounded,
                 label: 'Profil',
