@@ -228,28 +228,78 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                       fontSize: 13, color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      await context
-                          .read<ReportProvider>()
-                          .updateReportStatus(
-                            reportId: report.id,
-                            newStatus: sel,
-                            note: noteCtrl.text.isNotEmpty
-                                ? noteCtrl.text
-                                : null,
-                          );
-                    },
-                    child: const Text('Simpan'),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _confirmDelete(context, report.id),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: const BorderSide(color: AppColors.statusRejected),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Text('Hapus', style: GoogleFonts.poppins(color: AppColors.statusRejected, fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(ctx);
+                          await context
+                              .read<ReportProvider>()
+                              .updateReportStatus(
+                                reportId: report.id,
+                                newStatus: sel,
+                                note: noteCtrl.text.isNotEmpty
+                                    ? noteCtrl.text
+                                    : null,
+                              );
+                        },
+                        child: const Text('Simpan'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, String reportId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Hapus Laporan', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Text('Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.',
+            style: GoogleFonts.poppins(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx); 
+              Navigator.pop(context); 
+              await context.read<ReportProvider>().deleteReport(reportId);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Laporan berhasil dihapus', style: TextStyle(color: Colors.white)),
+                    backgroundColor: AppColors.statusRejected,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.statusRejected),
+            child: Text('Hapus', style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
