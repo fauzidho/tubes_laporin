@@ -34,6 +34,16 @@ class ReportProvider extends ChangeNotifier {
   int get inProgressCount => countByStatus(ReportStatus.inProgress);
   int get resolvedCount => countByStatus(ReportStatus.resolved);
 
+  int getUserTotalReports(String userId) =>
+      _reports.where((r) => r.userId == userId).length;
+      
+  int getUserCountByStatus(String userId, ReportStatus status) =>
+      _reports.where((r) => r.userId == userId && r.status == status).length;
+      
+  int getUserPendingCount(String userId) => getUserCountByStatus(userId, ReportStatus.pending);
+  int getUserInProgressCount(String userId) => getUserCountByStatus(userId, ReportStatus.inProgress);
+  int getUserResolvedCount(String userId) => getUserCountByStatus(userId, ReportStatus.resolved);
+
   List<ReportModel> get recentReports {
     final sorted = List<ReportModel>.from(_reports)
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -179,6 +189,20 @@ class ReportProvider extends ChangeNotifier {
       });
     } catch (e) {
       debugPrint('Error updating report status: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteReport(String reportId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _firestore.collection('reports').doc(reportId).delete();
+    } catch (e) {
+      debugPrint('Error deleting report: $e');
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();

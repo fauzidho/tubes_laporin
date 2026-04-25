@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/report_status.dart';
 import '../../providers/report_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../home/widgets/status_badge.dart';
 
 class ReportDetailScreen extends StatelessWidget {
@@ -17,6 +18,8 @@ class ReportDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final report = context.watch<ReportProvider>().getReportById(reportId);
+    final auth = context.read<AuthProvider>();
+    final currentUser = auth.currentUser;
 
     if (report == null) {
       return const Scaffold(
@@ -45,6 +48,11 @@ class ReportDetailScreen extends StatelessWidget {
               ),
             ),
             actions: [
+              if (currentUser != null && (currentUser.id == report.userId || currentUser.isAdmin))
+                IconButton(
+                  icon: const Icon(Icons.delete_rounded, color: Colors.white),
+                  onPressed: () => _showDeleteDialog(context, reportId),
+                ),
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: StatusBadge(status: report.status),
@@ -259,6 +267,40 @@ class ReportDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, String reportId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Hapus Laporan', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Text('Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.',
+            style: GoogleFonts.poppins(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await context.read<ReportProvider>().deleteReport(reportId);
+              if (context.mounted) {
+                Navigator.pop(context); // pop detail screen
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Laporan berhasil dihapus'),
+                    backgroundColor: AppColors.statusRejected,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.statusRejected),
+            child: Text('Hapus', style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),

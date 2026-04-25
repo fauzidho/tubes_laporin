@@ -115,7 +115,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Stats grid
-                  _StatsGrid(reports: reports),
+                  _StatsGrid(reports: reports, userId: user.id),
                   const SizedBox(height: 24),
 
                   // Quick action button
@@ -191,7 +191,8 @@ class HomeScreen extends StatelessWidget {
 
 class _StatsGrid extends StatelessWidget {
   final ReportProvider reports;
-  const _StatsGrid({required this.reports});
+  final String userId;
+  const _StatsGrid({required this.reports, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +206,7 @@ class _StatsGrid extends StatelessWidget {
       children: [
         _StatCard(
           label: 'Total Laporan',
-          value: reports.totalReports,
+          value: reports.getUserTotalReports(userId),
           icon: Icons.assignment_rounded,
           color: AppColors.primaryLight,
           gradient: const LinearGradient(
@@ -217,7 +218,7 @@ class _StatsGrid extends StatelessWidget {
         ),
         _StatCard(
           label: 'Menunggu',
-          value: reports.pendingCount,
+          value: reports.getUserPendingCount(userId),
           icon: Icons.hourglass_empty_rounded,
           color: AppColors.statusPending,
           gradient: LinearGradient(
@@ -232,7 +233,7 @@ class _StatsGrid extends StatelessWidget {
         ),
         _StatCard(
           label: 'Diproses',
-          value: reports.inProgressCount,
+          value: reports.getUserInProgressCount(userId),
           icon: Icons.sync_rounded,
           color: AppColors.statusInProgress,
           gradient: LinearGradient(
@@ -247,7 +248,7 @@ class _StatsGrid extends StatelessWidget {
         ),
         _StatCard(
           label: 'Selesai',
-          value: reports.resolvedCount,
+          value: reports.getUserResolvedCount(userId),
           icon: Icons.check_circle_rounded,
           color: AppColors.statusResolved,
           gradient: LinearGradient(
