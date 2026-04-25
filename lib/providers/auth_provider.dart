@@ -159,6 +159,28 @@ class AuthProvider extends ChangeNotifier {
     await _auth.signOut();
   }
 
+  Future<bool> updateProfile({required String name, required String nim, required String prodi}) async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+    try {
+      if (_currentUser == null) return false;
+      await _firestore.collection('users').doc(_currentUser!.id).update({
+        'name': name,
+        'nim': nim,
+        'prodi': prodi,
+      });
+      _currentUser = _currentUser!.copyWith(name: name, nim: nim, prodi: prodi);
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = 'Gagal memperbarui profil: $e';
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      return false;
+    }
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
