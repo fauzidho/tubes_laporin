@@ -143,7 +143,7 @@ class _FeedCard extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 160,
-                color: report.category.color.withOpacity(0.08),
+                color: report.category.color.withValues(alpha: 0.08),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

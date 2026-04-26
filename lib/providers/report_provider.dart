@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -8,13 +7,9 @@ import '../models/report_model.dart';
 import '../models/report_status.dart';
 
 // Conditional import: dart:io only available on non-web platforms
-import 'io_helper_stub.dart'
-    if (dart.library.io) 'io_helper_native.dart';
 
 class ReportProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
   List<ReportModel> _reports = [];
   bool _isLoading = false;
 

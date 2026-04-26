@@ -38,7 +38,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Icon(Icons.assignment_rounded,
@@ -87,7 +87,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                       children: [
                         Icon(Icons.search_off_rounded,
                             size: 64,
-                            color: AppColors.textHint.withOpacity(0.4)),
+                            color: AppColors.textHint.withValues(alpha: 0.4)),
                         const SizedBox(height: 12),
                         Text(
                           _filterStatus == null
@@ -144,10 +144,10 @@ class _FilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color : color.withOpacity(0.08),
+          color: isSelected ? color : color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: isSelected ? color : color.withOpacity(0.2),
+            color: isSelected ? color : color.withValues(alpha: 0.2),
           ),
         ),
         child: Text(

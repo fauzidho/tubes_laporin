@@ -213,7 +213,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -271,7 +271,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -299,7 +299,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.5),
+                    Colors.black.withValues(alpha: 0.5),
                     Colors.transparent,
                   ],
                 ),
@@ -311,7 +311,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.8),
+                      color: Colors.red.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -336,7 +336,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.flip_camera_android_rounded,
@@ -356,7 +356,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Colors.black.withOpacity(0.6),
+                  Colors.black.withValues(alpha: 0.6),
                   Colors.transparent,
                 ],
               ),
@@ -373,7 +373,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withValues(alpha: 0.15),
                     ),
                     child: Center(
                       child: _isCapturing
@@ -403,7 +403,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
               'Tap untuk mengambil foto',
               style: GoogleFonts.poppins(
                 fontSize: 11,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -442,7 +442,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(

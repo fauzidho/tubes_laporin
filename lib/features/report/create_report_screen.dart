@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/report_status.dart';
@@ -26,7 +25,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   ReportCategory? _selectedCategory;
   String? _selectedLocation;
   XFile? _capturedPhoto;
-  final ImagePicker _picker = ImagePicker();
+
 
   final List<String> _locations = [
     'Gedung Kuliah Umum (GKU) Lt. 1',
@@ -108,20 +107,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
-  }
-
-  Future<void> _takeFromCamera() async {
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-      );
-      if (photo != null) {
-        setState(() => _capturedPhoto = photo);
-      }
-    } catch (e) {
-      _showError('Gagal membuka kamera: $e');
-    }
   }
 
   Future<void> _submit() async {
@@ -218,7 +203,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         decoration: BoxDecoration(
                           color: isDone || isActive
                               ? Colors.white
-                              : Colors.white.withOpacity(0.3),
+                              : Colors.white.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -231,7 +216,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               isActive ? FontWeight.w600 : FontWeight.w400,
                           color: isActive
                               ? Colors.white
-                              : Colors.white.withOpacity(0.6),
+                              : Colors.white.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -276,7 +261,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: _selectedCategory == cat
-                      ? cat.color.withOpacity(0.1)
+                      ? cat.color.withValues(alpha: 0.1)
                       : AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
@@ -287,7 +272,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.05),
+                      color: AppColors.primary.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -299,7 +284,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: cat.color.withOpacity(
+                        color: cat.color.withValues(alpha: 
                             _selectedCategory == cat ? 0.15 : 0.08),
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -537,13 +522,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       color: AppColors.textPrimary),
                 ),
                 const SizedBox(height: 12),
-                _SummaryRow('Kategori',
+                _summaryRow('Kategori',
                     _selectedCategory?.label ?? '-'),
-                _SummaryRow('Judul',
+                _summaryRow('Judul',
                     _titleCtrl.text.isNotEmpty ? _titleCtrl.text : '-'),
-                _SummaryRow(
+                _summaryRow(
                     'Lokasi', _selectedLocation ?? '-'),
-                _SummaryRow('Foto',
+                _summaryRow('Foto',
                     _capturedPhoto != null ? '✅ Ada' : '⚠️ Tidak ada'),
               ],
             ),
@@ -553,7 +538,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     );
   }
 
-  Widget _SummaryRow(String label, String value) {
+  Widget _summaryRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -594,7 +579,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),

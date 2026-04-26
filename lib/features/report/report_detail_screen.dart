@@ -76,7 +76,7 @@ class ReportDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -99,10 +99,10 @@ class ReportDetailScreen extends StatelessWidget {
                       height: 140,
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: report.category.color.withOpacity(0.08),
+                        color: report.category.color.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: report.category.color.withOpacity(0.2)),
+                            color: report.category.color.withValues(alpha: 0.2)),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -131,7 +131,7 @@ class ReportDetailScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: report.category.color.withOpacity(0.1),
+                                color: report.category.color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(report.category.icon,
@@ -322,7 +322,7 @@ class _InfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.06),
+            color: AppColors.primary.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -373,7 +373,7 @@ class _DetailRow extends StatelessWidget {
           width: 30,
           height: 30,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
+            color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, size: 15, color: iconColor),
