@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'core/constants/app_colors.dart';
+import 'providers/auth_provider.dart';
+import 'providers/notification_provider.dart';
 import 'features/home/home_screen.dart';
 import 'features/report/feed_screen.dart';
 import 'features/report/my_reports_screen.dart';
@@ -15,6 +18,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = context.read<AuthProvider>().currentUser;
+      if (user != null) {
+        context.read<NotificationProvider>().listenToNotifications(user.id);
+      }
+    });
+  }
 
   final List<Widget> _screens = const [
     HomeScreen(),

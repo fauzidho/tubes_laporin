@@ -11,15 +11,39 @@ import '../../models/report_status.dart';
 import '../../models/report_model.dart';
 import '../../providers/report_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../home/widgets/status_badge.dart';
 
-class ReportDetailScreen extends StatelessWidget {
+class ReportDetailScreen extends StatefulWidget {
   final String reportId;
   const ReportDetailScreen({super.key, required this.reportId});
 
   @override
+  State<ReportDetailScreen> createState() => _ReportDetailScreenState();
+}
+
+class _ReportDetailScreenState extends State<ReportDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _markAsRead();
+    });
+  }
+
+  void _markAsRead() {
+    final notifications = context.read<NotificationProvider>().notifications;
+    final relatedNotifs = notifications.where(
+        (n) => n.relatedId == widget.reportId && !n.isRead);
+    
+    for (var n in relatedNotifs) {
+      context.read<NotificationProvider>().markAsRead(n.id);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final report = context.watch<ReportProvider>().getReportById(reportId);
+    final report = context.watch<ReportProvider>().getReportById(widget.reportId);
     final auth = context.read<AuthProvider>();
     final currentUser = auth.currentUser;
 
@@ -53,7 +77,7 @@ class ReportDetailScreen extends StatelessWidget {
               if (currentUser != null && (currentUser.id == report.userId || currentUser.isAdmin))
                 IconButton(
                   icon: const Icon(Icons.delete_rounded, color: Colors.white),
-                  onPressed: () => _showDeleteDialog(context, reportId),
+                  onPressed: () => _showDeleteDialog(context, widget.reportId),
                 ),
               Padding(
                 padding: const EdgeInsets.only(right: 16),

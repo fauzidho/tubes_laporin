@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/report_model.dart';
 import '../models/report_status.dart';
+import '../models/notification_model.dart';
+import 'notification_provider.dart';
 
 // Conditional import: dart:io only available on non-web platforms
 
@@ -169,6 +171,9 @@ class ReportProvider extends ChangeNotifier {
     try {
       final docRef = _firestore.collection('reports').doc(reportId);
       final now = DateTime.now();
+      
+      // Get report details for notification
+      final report = getReportById(reportId);
 
       final newTimeline = ReportTimeline(
         status: newStatus,
@@ -182,6 +187,17 @@ class ReportProvider extends ChangeNotifier {
         if (note != null) 'adminNotes': note,
         'timeline': FieldValue.arrayUnion([newTimeline.toMap()]),
       });
+
+      // Send notification to user
+      if (report != null) {
+        await NotificationProvider.sendNotification(
+          userId: report.userId,
+          title: 'Update Status Laporan',
+          message: 'Laporan "${report.title}" Anda kini berstatus ${newStatus.label}.',
+          type: NotificationType.statusUpdate,
+          relatedId: reportId,
+        );
+      }
     } catch (e) {
       debugPrint('Error updating report status: $e');
     } finally {
@@ -226,6 +242,18 @@ class ReportProvider extends ChangeNotifier {
         'comments': FieldValue.arrayUnion([comment.toMap()]),
         'updatedAt': now,
       });
+
+      // Send notification to report owner
+      final report = getReportById(reportId);
+      if (report != null && report.userId != userId) {
+        await NotificationProvider.sendNotification(
+          userId: report.userId,
+          title: 'Komentar Baru',
+          message: '$userName mengomentari laporan Anda: "$content"',
+          type: NotificationType.newComment,
+          relatedId: reportId,
+        );
+      }
     } catch (e) {
       debugPrint('Error adding comment: $e');
       rethrow;

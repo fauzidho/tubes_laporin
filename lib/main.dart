@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'core/constants/app_colors.dart';
 import 'providers/auth_provider.dart';
 import 'providers/report_provider.dart';
+import 'providers/notification_provider.dart';
 import 'features/auth/login_screen.dart';
 import 'main_screen.dart';
 import 'features/admin/admin_dashboard_screen.dart';
@@ -27,6 +28,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: const LaporInApp(),
     ),
