@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
                                   width: 36,
                                   height: 36,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
+                                    color: Colors.white.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(Icons.campaign_rounded,
@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
+                                color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -97,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                           'Ada fasilitas bermasalah? Laporkan sekarang!',
                           style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.white.withOpacity(0.8),
                           ),
                         ),
                       ],
@@ -223,8 +223,8 @@ class _StatsGrid extends StatelessWidget {
           color: AppColors.statusPending,
           gradient: LinearGradient(
             colors: [
-              AppColors.statusPending.withValues(alpha: 0.15),
-              AppColors.statusPending.withValues(alpha: 0.05),
+              AppColors.statusPending.withOpacity(0.15),
+              AppColors.statusPending.withOpacity(0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -238,8 +238,8 @@ class _StatsGrid extends StatelessWidget {
           color: AppColors.statusInProgress,
           gradient: LinearGradient(
             colors: [
-              AppColors.statusInProgress.withValues(alpha: 0.15),
-              AppColors.statusInProgress.withValues(alpha: 0.05),
+              AppColors.statusInProgress.withOpacity(0.15),
+              AppColors.statusInProgress.withOpacity(0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -253,8 +253,8 @@ class _StatsGrid extends StatelessWidget {
           color: AppColors.statusResolved,
           gradient: LinearGradient(
             colors: [
-              AppColors.statusResolved.withValues(alpha: 0.15),
-              AppColors.statusResolved.withValues(alpha: 0.05),
+              AppColors.statusResolved.withOpacity(0.15),
+              AppColors.statusResolved.withOpacity(0.05),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -289,7 +289,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = isLight ? AppColors.textPrimary : Colors.white;
     final subColor =
-        isLight ? AppColors.textSecondary : Colors.white.withValues(alpha: 0.75);
+        isLight ? AppColors.textSecondary : Colors.white.withOpacity(0.75);
 
     return Container(
       decoration: BoxDecoration(
@@ -297,7 +297,7 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.2),
+            color: color.withOpacity(0.2),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -359,7 +359,7 @@ class _QuickActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.accent.withValues(alpha: 0.3),
+              color: AppColors.accent.withOpacity(0.3),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -371,7 +371,7 @@ class _QuickActionCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(Icons.camera_alt_rounded,
@@ -394,7 +394,7 @@ class _QuickActionCard extends StatelessWidget {
                     'Foto & laporkan fasilitas rusak sekarang',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: Colors.white.withOpacity(0.85),
                     ),
                   ),
                 ],
@@ -420,7 +420,7 @@ class _EmptyState extends StatelessWidget {
           Icon(
             Icons.assignment_outlined,
             size: 64,
-            color: AppColors.textHint.withValues(alpha: 0.5),
+            color: AppColors.textHint.withOpacity(0.5),
           ),
           const SizedBox(height: 12),
           Text(

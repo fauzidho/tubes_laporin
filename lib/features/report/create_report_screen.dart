@@ -203,7 +203,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         decoration: BoxDecoration(
                           color: isDone || isActive
                               ? Colors.white
-                              : Colors.white.withValues(alpha: 0.3),
+                              : Colors.white.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -216,7 +216,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                               isActive ? FontWeight.w600 : FontWeight.w400,
                           color: isActive
                               ? Colors.white
-                              : Colors.white.withValues(alpha: 0.6),
+                              : Colors.white.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -261,7 +261,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: _selectedCategory == cat
-                      ? cat.color.withValues(alpha: 0.1)
+                      ? cat.color.withOpacity(0.1)
                       : AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
@@ -272,7 +272,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.05),
+                      color: AppColors.primary.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -284,7 +284,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: cat.color.withValues(alpha: 
+                        color: cat.color.withOpacity(
                             _selectedCategory == cat ? 0.15 : 0.08),
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -580,7 +580,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.1),
+            color: AppColors.primary.withOpacity(0.1),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),

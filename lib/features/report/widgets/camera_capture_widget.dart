@@ -221,7 +221,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -293,7 +293,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
           boxShadow: [
             BoxShadow(
               color: (isPrimary ? AppColors.primary : Colors.black)
-                  .withValues(alpha: 0.1),
+                  .withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -328,7 +328,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -356,7 +356,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
+                  color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.close_rounded, color: Colors.white, size: 20),
@@ -376,7 +376,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.4),
+                    Colors.black.withOpacity(0.4),
                     Colors.transparent,
                   ],
                 ),
@@ -390,7 +390,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.flip_camera_android_rounded,
@@ -417,7 +417,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 4),
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withOpacity(0.2),
                     ),
                     child: Center(
                       child: _isCapturing
@@ -489,7 +489,7 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                     icon: const Icon(Icons.refresh_rounded, size: 18),
                     label: const Text('Ambil Ulang'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      backgroundColor: Colors.white.withOpacity(0.2),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       side: const BorderSide(color: Colors.white30),

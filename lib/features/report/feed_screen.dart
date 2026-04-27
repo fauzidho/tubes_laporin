@@ -9,6 +9,7 @@ import '../../core/constants/app_colors.dart';
 import '../../providers/report_provider.dart';
 import '../../models/report_model.dart';
 import '../../models/report_status.dart';
+import '../../providers/auth_provider.dart';
 import '../home/widgets/status_badge.dart';
 import 'report_detail_screen.dart';
 
@@ -143,7 +144,7 @@ class _FeedCard extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 160,
-                color: report.category.color.withValues(alpha: 0.08),
+                color: report.category.color.withOpacity(0.08),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -201,18 +202,322 @@ class _FeedCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(report.createdAt),
-                    style: GoogleFonts.poppins(
-                      fontSize: 11,
-                      color: AppColors.textHint,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        DateFormat('dd MMMM yyyy, HH:mm', 'id').format(report.createdAt),
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: AppColors.textHint,
+                        ),
+                      ),
+                      const Spacer(),
+                      _CommentButton(report: report),
+                    ],
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CommentButton extends StatelessWidget {
+  final ReportModel report;
+  const _CommentButton({required this.report});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => _showComments(context),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.primarySurface,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.chat_bubble_outline_rounded,
+                size: 16, color: AppColors.primary),
+            const SizedBox(width: 6),
+            Text(
+              '${report.comments.length} Komentar',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showComments(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _CommentSheet(reportId: report.id),
+    );
+  }
+}
+
+class _CommentSheet extends StatefulWidget {
+  final String reportId;
+  const _CommentSheet({required this.reportId});
+
+  @override
+  State<_CommentSheet> createState() => _CommentSheetState();
+}
+
+class _CommentSheetState extends State<_CommentSheet> {
+  final _commentCtrl = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _commentCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitComment() async {
+    final content = _commentCtrl.text.trim();
+    if (content.isEmpty) return;
+
+    final reportProvider = context.read<ReportProvider>();
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.currentUser;
+
+    if (user == null) return;
+
+    setState(() => _isSubmitting = true);
+    try {
+      await reportProvider.addComment(
+        reportId: widget.reportId,
+        userId: user.id,
+        userName: user.name,
+        content: content,
+      );
+      _commentCtrl.clear();
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal mengirim komentar: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final report = context.watch<ReportProvider>().getReportById(widget.reportId);
+    if (report == null) return const SizedBox.shrink();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Column(
+        children: [
+          // Drag handle
+          Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                Text(
+                  'Komentar',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${report.comments.length}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+
+          // Comments list
+          Expanded(
+            child: report.comments.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.chat_bubble_outline_rounded,
+                            size: 48, color: AppColors.textHint.withOpacity(0.5)),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Belum ada komentar',
+                          style: GoogleFonts.poppins(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: report.comments.length,
+                    itemBuilder: (context, index) {
+                      final comment = report.comments[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 18,
+                              backgroundColor: AppColors.primarySurface,
+                              child: Text(
+                                comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : '?',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        comment.userName,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        DateFormat('dd MMM, HH:mm').format(comment.createdAt),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 10,
+                                          color: AppColors.textHint,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    comment.content,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+
+          // Input field
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentCtrl,
+                    decoration: InputDecoration(
+                      hintText: 'Tulis komentar...',
+                      filled: true,
+                      fillColor: AppColors.background,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    maxLines: null,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _isSubmitting
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : IconButton(
+                        onPressed: _submitComment,
+                        icon: const Icon(Icons.send_rounded),
+                        color: AppColors.primary,
+                      ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

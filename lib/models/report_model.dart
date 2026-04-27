@@ -16,6 +16,8 @@ class ReportTimeline {
     if (map['timestamp'] != null) {
       if (map['timestamp'] is String) {
         parsedDate = DateTime.parse(map['timestamp']);
+      } else if (map['timestamp'] is DateTime) {
+        parsedDate = map['timestamp'];
       } else {
         parsedDate = map['timestamp'].toDate();
       }
@@ -40,6 +42,49 @@ class ReportTimeline {
   }
 }
 
+class ReportComment {
+  final String id;
+  final String userId;
+  final String userName;
+  final String content;
+  final DateTime createdAt;
+
+  const ReportComment({
+    required this.id,
+    required this.userId,
+    required this.userName,
+    required this.content,
+    required this.createdAt,
+  });
+
+  factory ReportComment.fromMap(Map<String, dynamic> map) {
+    DateTime parseDate(dynamic val) {
+      if (val == null) return DateTime.now();
+      if (val is String) return DateTime.parse(val);
+      if (val is DateTime) return val;
+      return val.toDate();
+    }
+
+    return ReportComment(
+      id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
+      userName: map['userName'] ?? '',
+      content: map['content'] ?? '',
+      createdAt: parseDate(map['createdAt']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'userId': userId,
+      'userName': userName,
+      'content': content,
+      'createdAt': createdAt,
+    };
+  }
+}
+
 class ReportModel {
   final String id;
   final String userId;
@@ -55,6 +100,7 @@ class ReportModel {
   final DateTime updatedAt;
   final String? adminNotes;
   final List<ReportTimeline> timeline;
+  final List<ReportComment> comments;
 
   const ReportModel({
     required this.id,
@@ -71,6 +117,7 @@ class ReportModel {
     required this.updatedAt,
     this.adminNotes,
     this.timeline = const [],
+    this.comments = const [],
   });
 
   ReportModel copyWith({
@@ -88,6 +135,7 @@ class ReportModel {
     DateTime? updatedAt,
     String? adminNotes,
     List<ReportTimeline>? timeline,
+    List<ReportComment>? comments,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -104,6 +152,7 @@ class ReportModel {
       updatedAt: updatedAt ?? this.updatedAt,
       adminNotes: adminNotes ?? this.adminNotes,
       timeline: timeline ?? this.timeline,
+      comments: comments ?? this.comments,
     );
   }
 
@@ -122,6 +171,7 @@ class ReportModel {
       'updatedAt': updatedAt,
       'adminNotes': adminNotes,
       'timeline': timeline.map((x) => x.toMap()).toList(),
+      'comments': comments.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -129,6 +179,7 @@ class ReportModel {
     DateTime parseDate(dynamic val) {
       if (val == null) return DateTime.now();
       if (val is String) return DateTime.parse(val);
+      if (val is DateTime) return val;
       return val.toDate(); // Firestore Timestamp handling fallback
     }
 
@@ -152,10 +203,14 @@ class ReportModel {
       createdAt: parseDate(map['createdAt']),
       updatedAt: parseDate(map['updatedAt']),
       adminNotes: map['adminNotes'],
-      timeline: map['timeline'] != null
-          ? List<ReportTimeline>.from(
-              map['timeline']?.map((x) => ReportTimeline.fromMap(x)))
-          : [],
+      timeline: (map['timeline'] as List?)
+              ?.map<ReportTimeline>((x) => ReportTimeline.fromMap(x as Map<String, dynamic>))
+              ?.toList() ??
+          <ReportTimeline>[],
+      comments: (map['comments'] as List?)
+              ?.map<ReportComment>((x) => ReportComment.fromMap(x as Map<String, dynamic>))
+              ?.toList() ??
+          <ReportComment>[],
     );
   }
 }

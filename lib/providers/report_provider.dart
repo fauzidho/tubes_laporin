@@ -56,7 +56,7 @@ class ReportProvider extends ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
       _reports = snapshot.docs.map((doc) {
-        return ReportModel.fromMap(doc.data(), doc.id);
+        return ReportModel.fromMap(doc.data() ?? {}, doc.id);
       }).toList();
       notifyListeners();
     });
@@ -201,6 +201,34 @@ class ReportProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> addComment({
+    required String reportId,
+    required String userId,
+    required String userName,
+    required String content,
+  }) async {
+    try {
+      final docRef = _firestore.collection('reports').doc(reportId);
+      final now = DateTime.now();
+
+      final comment = ReportComment(
+        id: '${userId}_${now.millisecondsSinceEpoch}',
+        userId: userId,
+        userName: userName,
+        content: content,
+        createdAt: now,
+      );
+
+      await docRef.update({
+        'comments': FieldValue.arrayUnion([comment.toMap()]),
+        'updatedAt': now,
+      });
+    } catch (e) {
+      debugPrint('Error adding comment: $e');
+      rethrow;
     }
   }
 
