@@ -476,8 +476,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           ),
           const SizedBox(height: 20),
 
-          SizedBox(
-            height: 480,
+          Container(
+            height: MediaQuery.of(context).size.height * 0.55,
+            constraints: const BoxConstraints(minHeight: 400, maxHeight: 600),
             child: CameraCaptureWidget(
               onPhotoTaken: (photo) {
                 setState(() => _capturedPhoto = photo);
