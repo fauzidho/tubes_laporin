@@ -58,7 +58,7 @@ class ReportProvider extends ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
       _reports = snapshot.docs.map((doc) {
-        return ReportModel.fromMap(doc.data() ?? {}, doc.id);
+        return ReportModel.fromMap(doc.data(), doc.id);
       }).toList();
       notifyListeners();
     });

@@ -46,7 +46,7 @@ class AdminDashboardScreen extends StatelessWidget {
                                   width: 36,
                                   height: 36,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(
@@ -69,7 +69,7 @@ class AdminDashboardScreen extends StatelessWidget {
                               icon: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Icon(Icons.logout_rounded,
@@ -85,7 +85,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           'Selamat datang, ${auth.currentUser?.name ?? 'Admin'} 👋',
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.85),
+                            color: Colors.white.withValues(alpha: 0.85),
                           ),
                         ),
                       ],
@@ -241,7 +241,7 @@ class AdminDashboardScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
                               color: s.color
-                                  .withOpacity(isSel ? 1.0 : 0.3)),
+                                  .withValues(alpha: isSel ? 1.0 : 0.3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -402,7 +402,7 @@ class _AdminStatsGrid extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -417,7 +417,7 @@ class _AdminStatsGrid extends StatelessWidget {
                   Text('Total Laporan',
                       style: GoogleFonts.poppins(
                           fontSize: 13,
-                          color: Colors.white.withOpacity(0.8))),
+                          color: Colors.white.withValues(alpha: 0.8))),
                   Text('${reports.totalReports}',
                       style: GoogleFonts.poppins(
                           fontSize: 42,
@@ -427,7 +427,7 @@ class _AdminStatsGrid extends StatelessWidget {
                   Text('laporan masuk',
                       style: GoogleFonts.poppins(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.7))),
+                          color: Colors.white.withValues(alpha: 0.7))),
                 ],
               ),
               const Icon(Icons.assignment_rounded,
@@ -495,7 +495,7 @@ class _MiniStat extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,7 +511,7 @@ class _MiniStat extends StatelessWidget {
           Text(label,
               style: GoogleFonts.poppins(
                   fontSize: 11,
-                  color: color.withOpacity(0.8),
+                  color: color.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500)),
         ],
       ),
@@ -549,7 +549,7 @@ class _CategoryBreakdown extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -593,7 +593,7 @@ class _CategoryBreakdown extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: e.value / total,
                       backgroundColor:
-                          e.key.color.withOpacity(0.1),
+                          e.key.color.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation(e.key.color),
                       minHeight: 6,
                     ),

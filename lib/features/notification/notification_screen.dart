@@ -76,7 +76,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Icon(
             Icons.notifications_none_rounded,
             size: 80,
-            color: AppColors.textHint.withOpacity(0.3),
+            color: AppColors.textHint.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
@@ -126,12 +126,12 @@ class _NotificationItem extends StatelessWidget {
           border: Border.all(
             color: notification.isRead
                 ? AppColors.border
-                : AppColors.primary.withOpacity(0.2),
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
           boxShadow: [
             if (!notification.isRead)
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -215,7 +215,7 @@ class _NotificationItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, size: 20, color: color),

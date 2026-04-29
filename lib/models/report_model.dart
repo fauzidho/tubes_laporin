@@ -205,11 +205,11 @@ class ReportModel {
       adminNotes: map['adminNotes'],
       timeline: (map['timeline'] as List?)
               ?.map<ReportTimeline>((x) => ReportTimeline.fromMap(x as Map<String, dynamic>))
-              ?.toList() ??
+              .toList() ??
           <ReportTimeline>[],
       comments: (map['comments'] as List?)
               ?.map<ReportComment>((x) => ReportComment.fromMap(x as Map<String, dynamic>))
-              ?.toList() ??
+              .toList() ??
           <ReportComment>[],
     );
   }

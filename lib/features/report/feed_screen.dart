@@ -102,6 +102,8 @@ class _FeedCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           report.location,
@@ -109,6 +111,8 @@ class _FeedCard extends StatelessWidget {
                             fontSize: 11,
                             color: AppColors.textHint,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -144,7 +148,7 @@ class _FeedCard extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 160,
-                color: report.category.color.withOpacity(0.08),
+                color: report.category.color.withValues(alpha: 0.08),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -368,7 +372,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -398,7 +402,7 @@ class _CommentSheetState extends State<_CommentSheet> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.chat_bubble_outline_rounded,
-                            size: 48, color: AppColors.textHint.withOpacity(0.5)),
+                            size: 48, color: AppColors.textHint.withValues(alpha: 0.5)),
                         const SizedBox(height: 12),
                         Text(
                           'Belum ada komentar',
@@ -436,11 +440,15 @@ class _CommentSheetState extends State<_CommentSheet> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
-                                        comment.userName,
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
+                                      Expanded(
+                                        child: Text(
+                                          comment.userName,
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -478,7 +486,7 @@ class _CommentSheetState extends State<_CommentSheet> {
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),

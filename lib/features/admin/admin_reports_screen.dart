@@ -183,7 +183,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                           color: isSel ? s.color : s.backgroundColor,
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
-                              color: s.color.withOpacity(isSel ? 1 : 0.3)),
+                              color: s.color.withValues(alpha: isSel ? 1 : 0.3)),
                         ),
                         child: Text(
                           s.label,
@@ -327,10 +327,10 @@ class _Chip extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? color : color.withOpacity(0.08),
+          color: isSelected ? color : color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-              color: isSelected ? color : color.withOpacity(0.2)),
+              color: isSelected ? color : color.withValues(alpha: 0.2)),
         ),
         child: Text(
           label,

@@ -102,7 +102,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha: 0.15),
                             blurRadius: 15,
                             offset: const Offset(0, 8),
                           ),
@@ -123,7 +123,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.fullscreen_rounded, color: Colors.white, size: 20),
@@ -139,9 +139,9 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: report.category.color.withOpacity(0.1),
+                            color: report.category.color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: report.category.color.withOpacity(0.2)),
+                            border: Border.all(color: report.category.color.withValues(alpha: 0.2)),
                           ),
                           child: Row(
                             children: [
@@ -194,7 +194,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.primarySurface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +237,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -389,11 +389,15 @@ class _CommentItem extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(
-                    comment.userName,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                  Expanded(
+                    child: Text(
+                      comment.userName,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -513,104 +517,6 @@ class _CommentInputState extends State<_CommentInput> {
   }
 }
 
-class _InfoCard extends StatelessWidget {
-  final Widget child;
-  const _InfoCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: AppColors.border),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String text;
-  const _SectionTitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: GoogleFonts.poppins(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color iconColor;
-
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 15, color: iconColor),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  color: AppColors.textHint,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                value,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _TimelineItem extends StatelessWidget {
   final ReportTimeline item;
@@ -696,20 +602,6 @@ class _PhotoPlaceholder extends StatelessWidget {
   }
 }
 
-class _LocalImageWidget extends StatelessWidget {
-  final String path;
-
-  const _LocalImageWidget({required this.path});
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.file(
-      File(path),
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => _PhotoPlaceholder(),
-    );
-  }
-}
 
 class _SectionHeader extends StatelessWidget {
   final String title;
@@ -757,7 +649,7 @@ class _CommentSection extends StatelessWidget {
             child: Column(
               children: [
                 Icon(Icons.chat_bubble_outline_rounded,
-                    size: 32, color: AppColors.textHint.withOpacity(0.3)),
+                    size: 32, color: AppColors.textHint.withValues(alpha: 0.3)),
                 const SizedBox(height: 8),
                 Text(
                   'Belum ada komentar',
@@ -804,7 +696,7 @@ class _InfoRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 18, color: color),
@@ -829,6 +721,8 @@ class _InfoRow extends StatelessWidget {
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               if (subValue != null)
                 Text(
@@ -837,6 +731,8 @@ class _InfoRow extends StatelessWidget {
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
             ],
           ),
@@ -884,7 +780,7 @@ class _BuildImage extends StatelessWidget {
           image,
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: Colors.black.withOpacity(0.2)),
+            child: Container(color: Colors.black.withValues(alpha: 0.2)),
           ),
         ],
       );

@@ -5,10 +5,8 @@ import '../models/notification_model.dart';
 class NotificationProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<NotificationModel> _notifications = [];
-  bool _isLoading = false;
 
   List<NotificationModel> get notifications => List.unmodifiable(_notifications);
-  bool get isLoading => _isLoading;
   int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
   // Real-time listener for user notifications

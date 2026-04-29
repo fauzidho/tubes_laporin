@@ -38,10 +38,10 @@ class ProfileScreen extends StatelessWidget {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                           border: Border.all(
-                              color: Colors.white.withOpacity(0.4), width: 2.5),
+                              color: Colors.white.withValues(alpha: 0.4), width: 2.5),
                         ),
                         child: Center(
                           child: Text(
@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                         user.nim,
                         style: GoogleFonts.poppins(
                           fontSize: 13,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -90,44 +90,51 @@ class ProfileScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.08),
+                          color: AppColors.primary.withValues(alpha: 0.08),
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _StatItem(
-                          label: 'Total',
-                          value: userReports.length,
-                          color: AppColors.primary,
+                        Expanded(
+                          child: _StatItem(
+                            label: 'Total',
+                            value: userReports.length,
+                            color: AppColors.primary,
+                          ),
                         ),
                         _Divider(),
-                        _StatItem(
-                          label: 'Menunggu',
-                          value: userReports
-                              .where((r) =>
-                                  r.status.name == 'pending')
-                              .length,
-                          color: AppColors.statusPending,
+                        Expanded(
+                          child: _StatItem(
+                            label: 'Menunggu',
+                            value: userReports
+                                .where((r) =>
+                                    r.status.name == 'pending')
+                                .length,
+                            color: AppColors.statusPending,
+                          ),
                         ),
                         _Divider(),
-                        _StatItem(
-                          label: 'Diproses',
-                          value: userReports
-                              .where((r) => r.status.name == 'inProgress')
-                              .length,
-                          color: AppColors.statusInProgress,
+                        Expanded(
+                          child: _StatItem(
+                            label: 'Diproses',
+                            value: userReports
+                                .where((r) => r.status.name == 'inProgress')
+                                .length,
+                            color: AppColors.statusInProgress,
+                          ),
                         ),
                         _Divider(),
-                        _StatItem(
-                          label: 'Selesai',
-                          value: userReports
-                              .where((r) => r.status.name == 'resolved')
-                              .length,
-                          color: AppColors.statusResolved,
+                        Expanded(
+                          child: _StatItem(
+                            label: 'Selesai',
+                            value: userReports
+                                .where((r) => r.status.name == 'resolved')
+                                .length,
+                            color: AppColors.statusResolved,
+                          ),
                         ),
                       ],
                     ),
@@ -349,7 +356,7 @@ class _SectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.06),
+            color: AppColors.primary.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
