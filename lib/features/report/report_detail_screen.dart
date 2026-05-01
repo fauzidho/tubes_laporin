@@ -12,6 +12,7 @@ import '../../models/report_model.dart';
 import '../../providers/report_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
+import '../../core/utils/file_validation.dart';
 import '../home/widgets/status_badge.dart';
 
 class ReportDetailScreen extends StatefulWidget {
@@ -126,9 +127,36 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                                 color: Colors.black.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.fullscreen_rounded, color: Colors.white, size: 20),
+                              child: Icon(
+                                FileValidation.isVideo(report.photoPath!) 
+                                  ? Icons.play_circle_fill_rounded 
+                                  : Icons.fullscreen_rounded, 
+                                color: Colors.white, 
+                                size: 24,
+                              ),
                             ),
                           ),
+                          if (FileValidation.isVideo(report.photoPath!))
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.6),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.videocam_rounded, color: Colors.white, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Video Laporan',
+                                      style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),

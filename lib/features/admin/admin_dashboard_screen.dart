@@ -175,11 +175,11 @@ class AdminDashboardScreen extends StatelessWidget {
         builder: (ctx, setModal) => Padding(
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
                   child: Container(
@@ -499,20 +499,34 @@ class _MiniStat extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
-          Text('$value',
-              style: GoogleFonts.poppins(
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '$value',
+                style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                   color: color,
-                  height: 1)),
-          Text(label,
-              style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  color: color.withValues(alpha: 0.8),
-                  fontWeight: FontWeight.w500)),
+                  height: 1,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11,
+              color: color.withValues(alpha: 0.8),
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

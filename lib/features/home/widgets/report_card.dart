@@ -79,6 +79,8 @@ class ReportCard extends StatelessWidget {
                               fontSize: 11,
                               color: AppColors.textHint,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),

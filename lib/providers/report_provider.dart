@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 import '../models/report_model.dart';
 import '../models/report_status.dart';
 import '../models/notification_model.dart';
+import '../core/utils/file_validation.dart';
 import 'notification_provider.dart';
+import 'package:path/path.dart' as p;
 
 // Conditional import: dart:io only available on non-web platforms
 
@@ -94,18 +96,22 @@ class ReportProvider extends ChangeNotifier {
         const String cloudName = 'dsss0rc4a';
         const String uploadPreset = 'MASUKKAN_NAMA_PRESET_DI_SINI'; // Ganti ini nanti!
         
-        final uri = Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/image/upload');
+        // Deteksi jenis file untuk Cloudinary (image atau video)
+        final resourceType = FileValidation.getCloudinaryResourceType(photo.path);
+        final extension = p.extension(photo.path);
+        
+        final uri = Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/$resourceType/upload');
         final request = http.MultipartRequest('POST', uri)
           ..fields['upload_preset'] = uploadPreset
-          ..fields['folder'] = 'Dynamic folders' // Folder tujuan di web Cloudinary
+          ..fields['folder'] = 'LaporIn_Media' // Folder tujuan di Cloudinary
           ..files.add(http.MultipartFile.fromBytes(
             'file', 
             bytes, 
-            filename: '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+            filename: '${userId}_${DateTime.now().millisecondsSinceEpoch}$extension',
           ));
 
-        final response = await request.send().timeout(const Duration(seconds: 30), onTimeout: () {
-          throw Exception('Upload foto ke Cloudinary waktu habis (Timeout).');
+        final response = await request.send().timeout(const Duration(seconds: 45), onTimeout: () {
+          throw Exception('Upload $resourceType ke Cloudinary waktu habis (Timeout).');
         });
 
         if (response.statusCode == 200 || response.statusCode == 201) {

@@ -66,17 +66,19 @@ class _LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: double.infinity,
+        width: double.infinity,
         decoration: const BoxDecoration(gradient: AppColors.splashGradient),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Top hero section
-              Expanded(
-                flex: 2,
-                child: FadeTransition(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                // Top hero section
+                FadeTransition(
                   opacity: _fadeAnim,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -122,17 +124,17 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-              ),
 
-              // Form card
-              Expanded(
-                flex: 3,
-                child: SlideTransition(
+                // Form card
+                SlideTransition(
                   position: _slideAnim,
                   child: FadeTransition(
                     opacity: _fadeAnim,
                     child: Container(
                       width: double.infinity,
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.6,
+                      ),
                       decoration: const BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.only(
@@ -140,138 +142,134 @@ class _LoginScreenState extends State<LoginScreen>
                           topRight: Radius.circular(32),
                         ),
                       ),
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(28),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Masuk Akun',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                      padding: const EdgeInsets.all(28),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Masuk Akun',
+                              style: GoogleFonts.poppins(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Selamat datang kembali 👋',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            TextFormField(
+                              controller: _emailCtrl,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email_rounded,
+                                    color: AppColors.primary),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Email wajib diisi';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _passCtrl,
+                              obscureText: _obscurePass,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: const Icon(Icons.lock_rounded,
+                                    color: AppColors.primary),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePass
+                                        ? Icons.visibility_off_rounded
+                                        : Icons.visibility_rounded,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  onPressed: () => setState(
+                                      () => _obscurePass = !_obscurePass),
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Selamat datang kembali 👋',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-                              TextFormField(
-                                controller: _emailCtrl,
-                                keyboardType: TextInputType.emailAddress,
-                                decoration: const InputDecoration(
-                                  labelText: 'Email',
-                                  prefixIcon: Icon(Icons.email_rounded,
-                                      color: AppColors.primary),
-                                ),
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    return 'Email wajib diisi';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              TextFormField(
-                                controller: _passCtrl,
-                                obscureText: _obscurePass,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  prefixIcon: const Icon(Icons.lock_rounded,
-                                      color: AppColors.primary),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePass
-                                          ? Icons.visibility_off_rounded
-                                          : Icons.visibility_rounded,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                    onPressed: () => setState(
-                                        () => _obscurePass = !_obscurePass),
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Password wajib diisi';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            Consumer<AuthProvider>(
+                              builder: (context, auth, _) {
+                                return SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        auth.status == AuthStatus.loading
+                                            ? null
+                                            : _login,
+                                    child: auth.status == AuthStatus.loading
+                                        ? const SizedBox(
+                                            width: 22,
+                                            height: 22,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.5,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text('Masuk'),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Belum punya akun? ',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) {
-                                    return 'Password wajib diisi';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 24),
-                              Consumer<AuthProvider>(
-                                builder: (context, auth, _) {
-                                  return SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed:
-                                          auth.status == AuthStatus.loading
-                                              ? null
-                                              : _login,
-                                      child: auth.status == AuthStatus.loading
-                                          ? const SizedBox(
-                                              width: 22,
-                                              height: 22,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.5,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                          : const Text('Masuk'),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              // Hint credentials
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Belum punya akun? ',
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const RegisterScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Daftar Sekarang',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const RegisterScreen(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      'Daftar Sekarang',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

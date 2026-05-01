@@ -5,6 +5,8 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/file_validation.dart';
+import 'package:path/path.dart' as p;
 
 /// Widget kamera langsung (Live Camera) menggunakan package camera Dart.
 /// Ini adalah fitur unggulan LaporIn – foto diambil langsung dari kamera
@@ -116,27 +118,67 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
   Future<void> _pickFromGallery() async {
     final picker = ImagePicker();
     try {
-      final photo = await picker.pickImage(
-        source: ImageSource.gallery,
+      // Menggunakan pickMedia untuk mendukung Gambar dan Video sekaligus
+      final media = await picker.pickMedia(
         imageQuality: 85,
       );
-      if (photo != null) {
+
+      if (media != null) {
+        // Validasi filterisasi: Hanya menerima gambar dan video
+        if (!FileValidation.isValidMedia(media)) {
+          if (mounted) {
+            _showInvalidFileAlert();
+          }
+          return;
+        }
+
         setState(() {
-          _capturedPhoto = photo;
+          _capturedPhoto = media;
           _activeSource = CameraSource.gallery;
         });
-        widget.onPhotoTaken(photo);
+        widget.onPhotoTaken(media);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal mengambil foto: $e'),
+            content: Text('Gagal mengambil media: $e'),
             backgroundColor: AppColors.statusRejected,
           ),
         );
       }
     }
+  }
+
+  void _showInvalidFileAlert() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.statusRejected),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'File Tidak Didukung',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Maaf, Anda hanya dapat mengunggah file gambar (JPG, PNG, WEBP) atau video (MP4, MOV).',
+          style: GoogleFonts.poppins(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Mengerti', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _takePicture() async {
@@ -471,10 +513,32 @@ class _CameraCaptureWidgetState extends State<CameraCaptureWidget>
                   _capturedPhoto!.path,
                   fit: BoxFit.contain,
                 )
-              : Image.file(
-                  File(_capturedPhoto!.path),
-                  fit: BoxFit.contain,
-                ),
+              : FileValidation.isVideo(_capturedPhoto!.path)
+                  ? Container(
+                      color: Colors.black,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.videocam_rounded, color: Colors.white, size: 64),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Video Terpilih',
+                              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
+                            ),
+                            Text(
+                              p.basename(_capturedPhoto!.path),
+                              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Image.file(
+                      File(_capturedPhoto!.path),
+                      fit: BoxFit.contain,
+                    ),
           
           // Action buttons
           Positioned(
