@@ -73,6 +73,8 @@ class ReportProvider extends ChangeNotifier {
     required String title,
     required ReportCategory category,
     required String location,
+    String? floor,
+    String? roomNumber,
     required String description,
     XFile? photo, // Menggunakan XFile untuk dukungan cross-platform (Web/Mobile/Desktop)
   }) async {
@@ -83,7 +85,7 @@ class ReportProvider extends ChangeNotifier {
       String? uploadUrl;
 
       // ====== CLOUDINARY UPLOAD LOGIC ======
-      // Gunakan Cloudinary sebagai pengganti Firebase Storage
+      // ... (existing logic)
       if (photo != null) {
         debugPrint('Membaca bytes foto...');
         final bytes = await photo.readAsBytes().timeout(const Duration(seconds: 15), onTimeout: () {
@@ -136,6 +138,8 @@ class ReportProvider extends ChangeNotifier {
         title: title,
         category: category,
         location: location,
+        floor: floor,
+        roomNumber: roomNumber,
         description: description,
         photoPath: uploadUrl, // Nullable, or URL if uploaded
         status: ReportStatus.pending,
@@ -262,6 +266,21 @@ class ReportProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error adding comment: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteComment(String reportId, ReportComment comment) async {
+    try {
+      final docRef = _firestore.collection('reports').doc(reportId);
+      final now = DateTime.now();
+
+      await docRef.update({
+        'comments': FieldValue.arrayRemove([comment.toMap()]),
+        'updatedAt': now,
+      });
+    } catch (e) {
+      debugPrint('Error deleting comment: $e');
       rethrow;
     }
   }

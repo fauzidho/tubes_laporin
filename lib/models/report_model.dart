@@ -93,6 +93,8 @@ class ReportModel {
   final String title;
   final ReportCategory category;
   final String location;
+  final String? floor;
+  final String? roomNumber;
   final String description;
   final String? photoPath; // local file path atau URL
   final ReportStatus status;
@@ -110,6 +112,8 @@ class ReportModel {
     required this.title,
     required this.category,
     required this.location,
+    this.floor,
+    this.roomNumber,
     required this.description,
     this.photoPath,
     this.status = ReportStatus.pending,
@@ -128,6 +132,8 @@ class ReportModel {
     String? title,
     ReportCategory? category,
     String? location,
+    String? floor,
+    String? roomNumber,
     String? description,
     String? photoPath,
     ReportStatus? status,
@@ -145,6 +151,8 @@ class ReportModel {
       title: title ?? this.title,
       category: category ?? this.category,
       location: location ?? this.location,
+      floor: floor ?? this.floor,
+      roomNumber: roomNumber ?? this.roomNumber,
       description: description ?? this.description,
       photoPath: photoPath ?? this.photoPath,
       status: status ?? this.status,
@@ -164,6 +172,8 @@ class ReportModel {
       'title': title,
       'category': category.name,
       'location': location,
+      'floor': floor,
+      'roomNumber': roomNumber,
       'description': description,
       'photoPath': photoPath,
       'status': status.name,
@@ -194,6 +204,8 @@ class ReportModel {
         orElse: () => ReportCategory.lainnya,
       ),
       location: map['location'] ?? '',
+      floor: map['floor'],
+      roomNumber: map['roomNumber'],
       description: map['description'] ?? '',
       photoPath: map['photoPath'],
       status: ReportStatus.values.firstWhere(
