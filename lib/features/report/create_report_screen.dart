@@ -388,7 +388,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               isExpanded: true,
-              value: _selectedLocation,
+              initialValue: _selectedLocation,
               hint: Text(
                 'Pilih lokasi...',
                 overflow: TextOverflow.ellipsis,
