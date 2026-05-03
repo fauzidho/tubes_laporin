@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: false,
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
@@ -49,52 +51,63 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                index: 0,
-                currentIndex: _currentIndex,
-                icon: Icons.home_rounded,
-                label: 'Beranda',
-                onTap: (i) => setState(() => _currentIndex = i),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.8),
+            border: const Border(
+              top: BorderSide(
+                color: AppColors.border,
+                width: 1,
               ),
-              _NavItem(
-                index: 1,
-                currentIndex: _currentIndex,
-                icon: Icons.explore_rounded,
-                label: 'Feed',
-                onTap: (i) => setState(() => _currentIndex = i),
-              ),
-              _NavItem(
-                index: 2,
-                currentIndex: _currentIndex,
-                icon: Icons.assignment_rounded,
-                label: 'Laporan',
-                onTap: (i) => setState(() => _currentIndex = i),
-              ),
-              _NavItem(
-                index: 3,
-                currentIndex: _currentIndex,
-                icon: Icons.person_rounded,
-                label: 'Profil',
-                onTap: (i) => setState(() => _currentIndex = i),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
             ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _NavItem(
+                    index: 0,
+                    currentIndex: _currentIndex,
+                    icon: Icons.home_rounded,
+                    label: 'Beranda',
+                    onTap: (i) => setState(() => _currentIndex = i),
+                  ),
+                  _NavItem(
+                    index: 1,
+                    currentIndex: _currentIndex,
+                    icon: Icons.explore_rounded,
+                    label: 'Feed',
+                    onTap: (i) => setState(() => _currentIndex = i),
+                  ),
+                  _NavItem(
+                    index: 2,
+                    currentIndex: _currentIndex,
+                    icon: Icons.assignment_rounded,
+                    label: 'Laporan',
+                    onTap: (i) => setState(() => _currentIndex = i),
+                  ),
+                  _NavItem(
+                    index: 3,
+                    currentIndex: _currentIndex,
+                    icon: Icons.person_rounded,
+                    label: 'Profil',
+                    onTap: (i) => setState(() => _currentIndex = i),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
