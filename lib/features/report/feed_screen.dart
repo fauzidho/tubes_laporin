@@ -39,6 +39,7 @@ class FeedScreen extends StatelessWidget {
               ),
             )
           : ListView.separated(
+              padding: const EdgeInsets.only(bottom: 20),
               itemCount: reports.length,
               separatorBuilder: (context, index) => const Divider(height: 1, thickness: 8, color: AppColors.background),
               itemBuilder: (context, index) {
@@ -416,6 +417,10 @@ class _CommentSheetState extends State<_CommentSheet> {
                     itemCount: report.comments.length,
                     itemBuilder: (context, index) {
                       final comment = report.comments[index];
+                      final auth = context.read<AuthProvider>();
+                      final currentUser = auth.currentUser;
+                      final canDelete = currentUser != null && (currentUser.isAdmin || currentUser.id == comment.userId);
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 20),
                         child: Row(
@@ -459,6 +464,21 @@ class _CommentSheetState extends State<_CommentSheet> {
                                           color: AppColors.textHint,
                                         ),
                                       ),
+                                      if (canDelete) ...[
+                                        const SizedBox(width: 8),
+                                        InkWell(
+                                          onTap: () => _showDeleteCommentDialog(context, report.id, comment),
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Icon(
+                                              Icons.delete_outline_rounded,
+                                              size: 16,
+                                              color: AppColors.statusRejected.withValues(alpha: 0.7),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ],
                                   ),
                                   const SizedBox(height: 4),
@@ -524,6 +544,44 @@ class _CommentSheetState extends State<_CommentSheet> {
                       ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteCommentDialog(
+      BuildContext context, String reportId, ReportComment comment) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Hapus Komentar',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Text('Apakah Anda yakin ingin menghapus komentar ini?',
+            style: GoogleFonts.poppins(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal',
+                style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await context.read<ReportProvider>().deleteComment(reportId, comment);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Komentar berhasil dihapus'),
+                    backgroundColor: AppColors.statusRejected,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.statusRejected),
+            child:
+                Text('Hapus', style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),

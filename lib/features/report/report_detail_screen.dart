@@ -390,11 +390,16 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
 }
 
 class _CommentItem extends StatelessWidget {
+  final String reportId;
   final ReportComment comment;
-  const _CommentItem({required this.comment});
+  const _CommentItem({required this.reportId, required this.comment});
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    final currentUser = auth.currentUser;
+    final canDelete = currentUser != null && (currentUser.isAdmin || currentUser.id == comment.userId);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -436,6 +441,21 @@ class _CommentItem extends StatelessWidget {
                       color: AppColors.textHint,
                     ),
                   ),
+                  if (canDelete) ...[
+                    const SizedBox(width: 4),
+                    InkWell(
+                      onTap: () => _showDeleteCommentDialog(context, reportId, comment),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.delete_outline_rounded,
+                          size: 14,
+                          color: AppColors.statusRejected.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 2),
@@ -450,6 +470,43 @@ class _CommentItem extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showDeleteCommentDialog(BuildContext context, String reportId, ReportComment comment) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Hapus Komentar',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        content: Text('Apakah Anda yakin ingin menghapus komentar ini?',
+            style: GoogleFonts.poppins(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal',
+                style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await context.read<ReportProvider>().deleteComment(reportId, comment);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Komentar berhasil dihapus'),
+                    backgroundColor: AppColors.statusRejected,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.statusRejected),
+            child:
+                Text('Hapus', style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -692,7 +749,7 @@ class _CommentSection extends StatelessWidget {
         else
           ...report.comments.map((comment) => Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: _CommentItem(comment: comment),
+                child: _CommentItem(reportId: report.id, comment: comment),
               )),
         const SizedBox(height: 8),
         _CommentInput(reportId: report.id),

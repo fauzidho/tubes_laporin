@@ -19,6 +19,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+  final _floorCtrl = TextEditingController();
+  final _roomCtrl = TextEditingController();
   final PageController _pageCtrl = PageController();
 
   int _currentStep = 0;
@@ -54,6 +56,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void dispose() {
     _titleCtrl.dispose();
     _descCtrl.dispose();
+    _floorCtrl.dispose();
+    _roomCtrl.dispose();
     _pageCtrl.dispose();
     super.dispose();
   }
@@ -122,6 +126,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         title: _titleCtrl.text.trim(),
         category: _selectedCategory!,
         location: _selectedLocation!,
+        floor: _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
+        roomNumber: _roomCtrl.text.trim().isEmpty ? null : _roomCtrl.text.trim(),
         description: _descCtrl.text.trim(),
         photo: _capturedPhoto,
       );
@@ -382,7 +388,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               isExpanded: true,
-              initialValue: _selectedLocation,
+              value: _selectedLocation,
               hint: Text(
                 'Pilih lokasi...',
                 overflow: TextOverflow.ellipsis,
@@ -405,6 +411,47 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                       ))
                   .toList(),
               onChanged: (v) => setState(() => _selectedLocation = v),
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _fieldLabel('Lantai'),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _floorCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: 'Cth: 3',
+                          prefixIcon: Icon(Icons.layers_rounded, color: AppColors.primary),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _fieldLabel('No. Ruangan'),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _roomCtrl,
+                        textCapitalization: TextCapitalization.characters,
+                        decoration: const InputDecoration(
+                          hintText: 'Cth: 301',
+                          prefixIcon: Icon(Icons.door_front_door_rounded, color: AppColors.primary),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
 
@@ -536,7 +583,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _summaryRow('Judul',
                     _titleCtrl.text.isNotEmpty ? _titleCtrl.text : '-'),
                 _summaryRow(
-                    'Lokasi', _selectedLocation ?? '-'),
+                    'Lokasi', 
+                    '${_selectedLocation ?? '-'} '
+                    '${_floorCtrl.text.isNotEmpty ? '(Lt. ${_floorCtrl.text})' : ''} '
+                    '${_roomCtrl.text.isNotEmpty ? '[R. ${_roomCtrl.text}]' : ''}'),
                 _summaryRow('Foto',
                     _capturedPhoto != null ? '✅ Ada' : '⚠️ Tidak ada'),
               ],
