@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Fungsi pembantu untuk memeriksa apakah user sudah login
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Fungsi pembantu untuk memeriksa apakah dokumen milik user yang bersangkutan
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Mengambil data user saat ini dari Firestore
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Fungsi pembantu untuk memeriksa apakah user saat ini adalah Admin.
+    // Menggunakan .get('isAdmin', false) agar tidak error jika field isAdmin tidak ada.
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        getUserData().get('isAdmin', false) == true;
+    }
+
+    // Aturan untuk koleksi Users
+    match /users/{userId} {
+      // Izinkan membaca jika user login dan membaca datanya sendiri, atau jika user adalah Admin
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // Izinkan membuat data profile sendiri saat registrasi akun baru
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Izinkan memperbarui profile sendiri, atau jika diubah oleh Admin
+      allow update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // Hanya Admin yang bisa menghapus data user
+      allow delete: if isAdmin();
+    }
+
+    // Aturan untuk koleksi Reports (Laporan)
+    match /reports/{reportId} {
+      // Semua user yang login dapat melihat daftar laporan
+      allow read: if isAuthenticated();
+      
+      // User yang login dapat membuat laporan baru (userId laporan harus sesuai dengan UID user login)
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Izinkan update: Admin memiliki akses penuh, user hanya bisa update jika status tidak berubah
+      allow update: if isAdmin() || (
+        isAuthenticated() && 
+        request.resource.data.get('status', '') == resource.data.get('status', '')
+      );
+      
+      // Hanya Admin atau pemilik laporan yang bisa menghapus laporan
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+
+    // Aturan untuk koleksi Notifications (Notifikasi)
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+  }
+}

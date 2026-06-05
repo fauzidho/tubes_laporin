@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final bool isAdmin;
   final DateTime createdAt;
+  final String? photoUrl;
 
   const UserModel({
     required this.id,
@@ -15,6 +16,7 @@ class UserModel {
     required this.email,
     this.isAdmin = false,
     required this.createdAt,
+    this.photoUrl,
   });
 
   String get initials {
@@ -33,6 +35,7 @@ class UserModel {
     String? email,
     bool? isAdmin,
     DateTime? createdAt,
+    String? photoUrl,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -42,6 +45,7 @@ class UserModel {
       email: email ?? this.email,
       isAdmin: isAdmin ?? this.isAdmin,
       createdAt: createdAt ?? this.createdAt,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 
@@ -53,6 +57,7 @@ class UserModel {
       'email': email,
       'isAdmin': isAdmin,
       'createdAt': createdAt,
+      'photoUrl': photoUrl,
     };
   }
 
@@ -76,6 +81,7 @@ class UserModel {
       email: map['email'] ?? '',
       isAdmin: map['isAdmin'] ?? false,
       createdAt: parsedDate,
+      photoUrl: map['photoUrl'],
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/user_model.dart';
+import '../core/services/cloudinary_service.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -9,6 +11,7 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus _status = AuthStatus.initial;
   UserModel? _currentUser;
   String? _errorMessage;
+  bool _isRegistering = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -28,6 +31,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     
     _auth.authStateChanges().listen((User? user) async {
+      if (_isRegistering) return;
+      
       if (user == null) {
         _currentUser = null;
         _status = AuthStatus.unauthenticated;
@@ -86,6 +91,7 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _status = AuthStatus.loading;
     _errorMessage = null;
+    _isRegistering = true;
     notifyListeners();
 
     try {
@@ -107,15 +113,25 @@ class AuthProvider extends ChangeNotifier {
         );
 
         await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
+        
+        // Keluarkan user segera setelah register berhasil agar mengarah ke login
+        await _auth.signOut();
+        
+        _isRegistering = false;
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
         return true;
       }
+      _isRegistering = false;
       return false;
     } on FirebaseAuthException catch (e) {
+      _isRegistering = false;
       _errorMessage = e.message ?? 'Gagal mendaftar.';
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       return false;
     } catch (e) {
+      _isRegistering = false;
       _errorMessage = 'Terjadi kesalahan: $e';
       _status = AuthStatus.unauthenticated;
       notifyListeners();
@@ -159,17 +175,38 @@ class AuthProvider extends ChangeNotifier {
     await _auth.signOut();
   }
 
-  Future<bool> updateProfile({required String name, required String nim, required String prodi}) async {
+  Future<bool> updateProfile({
+    required String name,
+    required String nim,
+    required String prodi,
+    XFile? photo,
+  }) async {
     _status = AuthStatus.loading;
     notifyListeners();
     try {
       if (_currentUser == null) return false;
+      
+      String? uploadUrl = _currentUser!.photoUrl;
+      if (photo != null) {
+        uploadUrl = await CloudinaryService.uploadMedia(
+          file: photo,
+          folder: 'LaporIn_Profile',
+          fileNamePrefix: _currentUser!.id,
+        );
+      }
+      
       await _firestore.collection('users').doc(_currentUser!.id).update({
         'name': name,
         'nim': nim,
         'prodi': prodi,
+        'photoUrl': uploadUrl,
       });
-      _currentUser = _currentUser!.copyWith(name: name, nim: nim, prodi: prodi);
+      _currentUser = _currentUser!.copyWith(
+        name: name,
+        nim: nim,
+        prodi: prodi,
+        photoUrl: uploadUrl,
+      );
       _status = AuthStatus.authenticated;
       notifyListeners();
       return true;

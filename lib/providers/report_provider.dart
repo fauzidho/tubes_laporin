@@ -1,14 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import '../core/services/cloudinary_service.dart';
 import '../models/report_model.dart';
 import '../models/report_status.dart';
 import '../models/notification_model.dart';
-import '../core/utils/file_validation.dart';
 import 'notification_provider.dart';
-import 'package:path/path.dart' as p;
 
 // Conditional import: dart:io only available on non-web platforms
 
@@ -85,46 +82,12 @@ class ReportProvider extends ChangeNotifier {
       String? uploadUrl;
 
       // ====== CLOUDINARY UPLOAD LOGIC ======
-      // ... (existing logic)
       if (photo != null) {
-        debugPrint('Membaca bytes foto...');
-        final bytes = await photo.readAsBytes().timeout(const Duration(seconds: 15), onTimeout: () {
-          throw Exception('Gagal membaca foto: Waktu habis.');
-        });
-        
-        debugPrint('Mulai upload foto ke Cloudinary...');
-        
-        // --- KONFIGURASI CLOUDINARY ---
-        const String cloudName = 'dsss0rc4a';
-        const String uploadPreset = 'MASUKKAN_NAMA_PRESET_DI_SINI'; // Ganti ini nanti!
-        
-        // Deteksi jenis file untuk Cloudinary (image atau video)
-        final resourceType = FileValidation.getCloudinaryResourceType(photo.path);
-        final extension = p.extension(photo.path);
-        
-        final uri = Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/$resourceType/upload');
-        final request = http.MultipartRequest('POST', uri)
-          ..fields['upload_preset'] = uploadPreset
-          ..fields['folder'] = 'LaporIn_Media' // Folder tujuan di Cloudinary
-          ..files.add(http.MultipartFile.fromBytes(
-            'file', 
-            bytes, 
-            filename: '${userId}_${DateTime.now().millisecondsSinceEpoch}$extension',
-          ));
-
-        final response = await request.send().timeout(const Duration(seconds: 45), onTimeout: () {
-          throw Exception('Upload $resourceType ke Cloudinary waktu habis (Timeout).');
-        });
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          final responseData = await response.stream.bytesToString();
-          final jsonResponse = json.decode(responseData);
-          uploadUrl = jsonResponse['secure_url'];
-          debugPrint('Upload Cloudinary Sukses: $uploadUrl');
-        } else {
-          final responseData = await response.stream.bytesToString();
-          throw Exception('Gagal upload ke Cloudinary: ${response.statusCode}\n$responseData');
-        }
+        uploadUrl = await CloudinaryService.uploadMedia(
+          file: photo,
+          folder: 'LaporIn_Media',
+          fileNamePrefix: userId,
+        );
       }
       // ======================================
 

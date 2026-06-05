@@ -43,15 +43,44 @@ class ProfileScreen extends StatelessWidget {
                           border: Border.all(
                               color: Colors.white.withValues(alpha: 0.4), width: 2.5),
                         ),
-                        child: Center(
-                          child: Text(
-                            user.initials,
-                            style: GoogleFonts.poppins(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
+                        child: ClipOval(
+                          child: user.photoUrl != null && user.photoUrl!.isNotEmpty
+                              ? Image.network(
+                                  user.photoUrl!,
+                                  fit: BoxFit.cover,
+                                  width: 80,
+                                  height: 80,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Center(
+                                    child: Text(
+                                      user.initials,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    user.initials,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 10),

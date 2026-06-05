@@ -14,6 +14,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../core/utils/file_validation.dart';
 import '../home/widgets/status_badge.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReportDetailScreen extends StatefulWidget {
   final String reportId;
@@ -308,12 +309,26 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                       ),
                       child: Column(
                         children: [
-                          _InfoRow(
-                            icon: Icons.person_rounded,
-                            label: 'Pelapor',
-                            value: report.userName,
-                            subValue: 'NIM: ${report.userNim}',
-                            color: Colors.blue,
+                          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance.collection('users').doc(report.userId).snapshots(),
+                            builder: (context, userSnapshot) {
+                              String reporterName = report.userName;
+                              String reporterNim = report.userNim;
+                              if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
+                                final userData = userSnapshot.data!.data();
+                                if (userData != null) {
+                                  reporterName = userData['name'] ?? report.userName;
+                                  reporterNim = userData['nim'] ?? report.userNim;
+                                }
+                              }
+                              return _InfoRow(
+                                icon: Icons.person_rounded,
+                                label: 'Pelapor',
+                                value: reporterName,
+                                subValue: 'NIM: $reporterNim',
+                                color: Colors.blue,
+                              );
+                            }
                           ),
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 12),
@@ -400,76 +415,117 @@ class _CommentItem extends StatelessWidget {
     final currentUser = auth.currentUser;
     final canDelete = currentUser != null && (currentUser.isAdmin || currentUser.id == comment.userId);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: AppColors.primarySurface,
-          child: Text(
-            comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : '?',
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      comment.userName,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    DateFormat('dd MMM, HH:mm', 'id').format(comment.createdAt),
-                    style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      color: AppColors.textHint,
-                    ),
-                  ),
-                  if (canDelete) ...[
-                    const SizedBox(width: 4),
-                    InkWell(
-                      onTap: () => _showDeleteCommentDialog(context, reportId, comment),
-                      borderRadius: BorderRadius.circular(12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.delete_outline_rounded,
-                          size: 14,
-                          color: AppColors.statusRejected.withValues(alpha: 0.7),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance.collection('users').doc(comment.userId).snapshots(),
+      builder: (context, userSnapshot) {
+        String commentatorName = comment.userName;
+        String? commentatorPhotoUrl;
+        if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
+          final userData = userSnapshot.data!.data();
+          if (userData != null) {
+            commentatorName = userData['name'] ?? comment.userName;
+            commentatorPhotoUrl = userData['photoUrl'];
+          }
+        }
+        final initials = comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : '?';
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: AppColors.primarySurface,
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: commentatorPhotoUrl != null && commentatorPhotoUrl.isNotEmpty
+                    ? Image.network(
+                        commentatorPhotoUrl,
+                        fit: BoxFit.cover,
+                        width: 32,
+                        height: 32,
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Text(
+                            initials,
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          initials,
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          commentatorName,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('dd MMM, HH:mm', 'id').format(comment.createdAt),
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          color: AppColors.textHint,
+                        ),
+                      ),
+                      if (canDelete) ...[
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () => _showDeleteCommentDialog(context, reportId, comment),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.delete_outline_rounded,
+                              size: 14,
+                              color: AppColors.statusRejected.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    comment.content,
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: AppColors.textPrimary,
                     ),
-                  ],
+                  ),
                 ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                comment.content,
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      }
     );
   }
 

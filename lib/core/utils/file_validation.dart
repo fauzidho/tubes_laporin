@@ -25,7 +25,7 @@ class FileValidation {
 
   /// Returns true if the file is an image or video.
   static bool isValidMedia(XFile file) {
-    final ext = p.extension(file.path).toLowerCase();
+    final ext = p.extension(file.name).toLowerCase();
     return allowedImageExtensions.contains(ext) || allowedVideoExtensions.contains(ext);
   }
 

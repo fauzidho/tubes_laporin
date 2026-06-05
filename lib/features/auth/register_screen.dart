@@ -53,7 +53,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       email: _emailCtrl.text.trim(),
       password: _passCtrl.text,
     );
-    if (!ok && mounted) {
+    if (ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Akun berhasil dibuat! Silakan masuk.'),
+          backgroundColor: AppColors.statusResolved,
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+      Navigator.pop(context); // Kembali ke halaman login
+    } else if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(auth.errorMessage ?? 'Registrasi gagal'),

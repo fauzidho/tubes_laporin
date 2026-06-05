@@ -12,6 +12,7 @@ import '../../models/report_status.dart';
 import '../../providers/auth_provider.dart';
 import '../home/widgets/status_badge.dart';
 import 'report_detail_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -80,46 +81,88 @@ class _FeedCard extends StatelessWidget {
             // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: AppColors.primarySurface,
-                    child: Text(
-                      _getInitials(report.userName),
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+              child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: FirebaseFirestore.instance.collection('users').doc(report.userId).snapshots(),
+                builder: (context, userSnapshot) {
+                  String name = report.userName;
+                  String? photoUrl;
+                  
+                  if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
+                    final data = userSnapshot.data!.data();
+                    if (data != null) {
+                      name = data['name'] ?? report.userName;
+                      photoUrl = data['photoUrl'];
+                    }
+                  }
+                  final initials = _getInitials(name);
+
+                  return Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primarySurface,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: photoUrl != null && photoUrl.isNotEmpty
+                              ? Image.network(
+                                  photoUrl,
+                                  fit: BoxFit.cover,
+                                  width: 40,
+                                  height: 40,
+                                  errorBuilder: (context, error, stackTrace) => Center(
+                                    child: Text(
+                                      initials,
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    initials,
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          report.userName,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              report.location,
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: AppColors.textHint,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Text(
-                          report.location,
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            color: AppColors.textHint,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  StatusBadge(status: report.status),
-                ],
+                      ),
+                      StatusBadge(status: report.status),
+                    ],
+                  );
+                }
               ),
             ),
             const SizedBox(height: 12),
@@ -423,76 +466,117 @@ class _CommentSheetState extends State<_CommentSheet> {
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 20),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 18,
-                              backgroundColor: AppColors.primarySurface,
-                              child: Text(
-                                comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : '?',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          comment.userName,
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 13,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        DateFormat('dd MMM, HH:mm').format(comment.createdAt),
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 10,
-                                          color: AppColors.textHint,
-                                        ),
-                                      ),
-                                      if (canDelete) ...[
-                                        const SizedBox(width: 8),
-                                        InkWell(
-                                          onTap: () => _showDeleteCommentDialog(context, report.id, comment),
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4),
-                                            child: Icon(
-                                              Icons.delete_outline_rounded,
-                                              size: 16,
-                                              color: AppColors.statusRejected.withValues(alpha: 0.7),
+                        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: FirebaseFirestore.instance.collection('users').doc(comment.userId).snapshots(),
+                          builder: (context, userSnapshot) {
+                            String commentatorName = comment.userName;
+                            String? commentatorPhotoUrl;
+                            if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
+                              final userData = userSnapshot.data!.data();
+                              if (userData != null) {
+                                commentatorName = userData['name'] ?? comment.userName;
+                                commentatorPhotoUrl = userData['photoUrl'];
+                              }
+                            }
+                            final initials = comment.userName.isNotEmpty ? comment.userName[0].toUpperCase() : '?';
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primarySurface,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: ClipOval(
+                                    child: commentatorPhotoUrl != null && commentatorPhotoUrl.isNotEmpty
+                                        ? Image.network(
+                                            commentatorPhotoUrl,
+                                            fit: BoxFit.cover,
+                                            width: 36,
+                                            height: 36,
+                                            errorBuilder: (context, error, stackTrace) => Center(
+                                              child: Text(
+                                                initials,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              initials,
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.primary,
+                                              ),
                                             ),
                                           ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              commentatorName,
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 13,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            DateFormat('dd MMM, HH:mm').format(comment.createdAt),
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 10,
+                                              color: AppColors.textHint,
+                                            ),
+                                          ),
+                                          if (canDelete) ...[
+                                            const SizedBox(width: 8),
+                                            InkWell(
+                                              onTap: () => _showDeleteCommentDialog(context, report.id, comment),
+                                              borderRadius: BorderRadius.circular(12),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(4),
+                                                child: Icon(
+                                                  Icons.delete_outline_rounded,
+                                                  size: 16,
+                                                  color: AppColors.statusRejected.withValues(alpha: 0.7),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        comment.content,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          color: AppColors.textPrimary,
                                         ),
-                                      ],
+                                      ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    comment.content,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 13,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                ),
+                              ],
+                            );
+                          }
                         ),
                       );
                     },

@@ -284,16 +284,29 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(ctx); 
-              Navigator.pop(context); 
-              await context.read<ReportProvider>().deleteReport(reportId);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Laporan berhasil dihapus', style: TextStyle(color: Colors.white)),
-                    backgroundColor: AppColors.statusRejected,
-                  ),
-                );
+              try {
+                await context.read<ReportProvider>().deleteReport(reportId);
+                if (context.mounted) {
+                  Navigator.pop(ctx); 
+                  Navigator.pop(context); 
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Laporan berhasil dihapus', style: TextStyle(color: Colors.white)),
+                      backgroundColor: AppColors.statusRejected,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(ctx); 
+                  Navigator.pop(context); 
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Gagal menghapus laporan: $e', style: const TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.statusRejected),
