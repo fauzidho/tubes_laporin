@@ -336,8 +336,11 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                           ),
                           _InfoRow(
                             icon: Icons.location_on_rounded,
-                            label: 'Lokasi',
+                            label: 'Lokasi Kejadian',
                             value: report.location,
+                            subValue: report.locationDetail != null && report.locationDetail!.isNotEmpty
+                                ? 'Detail: ${report.locationDetail}'
+                                : null,
                             color: Colors.red,
                           ),
                           const Padding(

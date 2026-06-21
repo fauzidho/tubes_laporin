@@ -70,7 +70,19 @@ class AuthProvider extends ChangeNotifier {
       // authStateChanges will trigger and update status
       return true;
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message ?? 'Login gagal, periksa kredensial Anda.';
+      if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        _errorMessage = 'Email atau password salah. Silakan coba lagi.';
+      } else if (e.code == 'invalid-email') {
+        _errorMessage = 'Format email tidak valid.';
+      } else if (e.code == 'user-disabled') {
+        _errorMessage = 'Akun ini telah dinonaktifkan.';
+      } else if (e.code == 'too-many-requests') {
+        _errorMessage = 'Terlalu banyak percobaan masuk yang gagal. Silakan coba beberapa saat lagi.';
+      } else if (e.code == 'network-request-failed') {
+        _errorMessage = 'Koneksi internet bermasalah. Periksa jaringan Anda.';
+      } else {
+        _errorMessage = e.message ?? 'Login gagal, periksa kredensial Anda.';
+      }
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       return false;
@@ -126,7 +138,17 @@ class AuthProvider extends ChangeNotifier {
       return false;
     } on FirebaseAuthException catch (e) {
       _isRegistering = false;
-      _errorMessage = e.message ?? 'Gagal mendaftar.';
+      if (e.code == 'email-already-in-use') {
+        _errorMessage = 'Email sudah terdaftar. Gunakan email lain.';
+      } else if (e.code == 'weak-password') {
+        _errorMessage = 'Password terlalu lemah. Minimal 6 karakter.';
+      } else if (e.code == 'invalid-email') {
+        _errorMessage = 'Format email tidak valid.';
+      } else if (e.code == 'network-request-failed') {
+        _errorMessage = 'Koneksi internet bermasalah. Periksa jaringan Anda.';
+      } else {
+        _errorMessage = e.message ?? 'Gagal mendaftar.';
+      }
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       return false;

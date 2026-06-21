@@ -115,7 +115,7 @@ class ReportCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Expanded(
                                   child: Text(
-                                    '${report.location}${report.floor != null ? ' • Lt. ${report.floor}' : ''}${report.roomNumber != null ? ' • R. ${report.roomNumber}' : ''}',
+                                    '${report.location}${report.locationDetail != null && report.locationDetail!.isNotEmpty ? ' • ${report.locationDetail}' : ''}',
                                     style: GoogleFonts.poppins(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,

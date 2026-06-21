@@ -70,8 +70,7 @@ class ReportProvider extends ChangeNotifier {
     required String title,
     required ReportCategory category,
     required String location,
-    String? floor,
-    String? roomNumber,
+    String? locationDetail,
     required String description,
     XFile? photo, // Menggunakan XFile untuk dukungan cross-platform (Web/Mobile/Desktop)
   }) async {
@@ -101,8 +100,7 @@ class ReportProvider extends ChangeNotifier {
         title: title,
         category: category,
         location: location,
-        floor: floor,
-        roomNumber: roomNumber,
+        locationDetail: locationDetail,
         description: description,
         photoPath: uploadUrl, // Nullable, or URL if uploaded
         status: ReportStatus.pending,

@@ -35,14 +35,28 @@ class _LoginScreenState extends State<LoginScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic));
     _animCtrl.forward();
+
+    // Clear error message when the user types
+    _emailCtrl.addListener(_clearAuthError);
+    _passCtrl.addListener(_clearAuthError);
   }
 
   @override
   void dispose() {
+    _emailCtrl.removeListener(_clearAuthError);
+    _passCtrl.removeListener(_clearAuthError);
     _animCtrl.dispose();
     _emailCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
+  }
+
+  void _clearAuthError() {
+    if (!mounted) return;
+    final auth = context.read<AuthProvider>();
+    if (auth.errorMessage != null) {
+      auth.clearError();
+    }
   }
 
   Future<void> _login() async {
@@ -209,24 +223,65 @@ class _LoginScreenState extends State<LoginScreen>
                             const SizedBox(height: 24),
                             Consumer<AuthProvider>(
                               builder: (context, auth, _) {
-                                return SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed:
-                                        auth.status == AuthStatus.loading
-                                            ? null
-                                            : _login,
-                                    child: auth.status == AuthStatus.loading
-                                        ? const SizedBox(
-                                            width: 22,
-                                            height: 22,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2.5,
-                                              color: Colors.white,
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (auth.errorMessage != null) ...[
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.statusRejectedBg,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: AppColors.statusRejected.withValues(alpha: 0.3),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.error_outline_rounded,
+                                              color: AppColors.statusRejected,
+                                              size: 20,
                                             ),
-                                          )
-                                        : const Text('Masuk'),
-                                  ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                auth.errorMessage!,
+                                                style: GoogleFonts.poppins(
+                                                  color: AppColors.statusRejected,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed:
+                                            auth.status == AuthStatus.loading
+                                                ? null
+                                                : _login,
+                                        child: auth.status == AuthStatus.loading
+                                            ? const SizedBox(
+                                                width: 22,
+                                                height: 22,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2.5,
+                                                  color: Colors.white,
+                                                ),
+                                              )
+                                            : const Text('Masuk'),
+                                      ),
+                                    ),
+                                  ],
                                 );
                               },
                             ),

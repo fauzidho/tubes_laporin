@@ -19,8 +19,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  final _floorCtrl = TextEditingController();
-  final _roomCtrl = TextEditingController();
+  final _locationDetailCtrl = TextEditingController();
   final PageController _pageCtrl = PageController();
 
   int _currentStep = 0;
@@ -56,8 +55,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   void dispose() {
     _titleCtrl.dispose();
     _descCtrl.dispose();
-    _floorCtrl.dispose();
-    _roomCtrl.dispose();
+    _locationDetailCtrl.dispose();
     _pageCtrl.dispose();
     super.dispose();
   }
@@ -126,8 +124,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         title: _titleCtrl.text.trim(),
         category: _selectedCategory!,
         location: _selectedLocation!,
-        floor: _floorCtrl.text.trim().isEmpty ? null : _floorCtrl.text.trim(),
-        roomNumber: _roomCtrl.text.trim().isEmpty ? null : _roomCtrl.text.trim(),
+        locationDetail: _locationDetailCtrl.text.trim().isEmpty ? null : _locationDetailCtrl.text.trim(),
         description: _descCtrl.text.trim(),
         photo: _capturedPhoto,
       );
@@ -414,44 +411,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             ),
             const SizedBox(height: 16),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _fieldLabel('Lantai'),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _floorCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Cth: 3',
-                          prefixIcon: Icon(Icons.layers_rounded, color: AppColors.primary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _fieldLabel('No. Ruangan'),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _roomCtrl,
-                        textCapitalization: TextCapitalization.characters,
-                        decoration: const InputDecoration(
-                          hintText: 'Cth: 301',
-                          prefixIcon: Icon(Icons.door_front_door_rounded, color: AppColors.primary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            _fieldLabel('Detail Lokasi'),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _locationDetailCtrl,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                hintText: 'Contoh: Lantai 3, Ruang 301, dekat jendela',
+                prefixIcon: Icon(Icons.info_outline_rounded, color: AppColors.primary),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -585,8 +553,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 _summaryRow(
                     'Lokasi', 
                     '${_selectedLocation ?? '-'} '
-                    '${_floorCtrl.text.isNotEmpty ? '(Lt. ${_floorCtrl.text})' : ''} '
-                    '${_roomCtrl.text.isNotEmpty ? '[R. ${_roomCtrl.text}]' : ''}'),
+                    '${_locationDetailCtrl.text.isNotEmpty ? '(${_locationDetailCtrl.text})' : ''}'),
                 _summaryRow('Foto',
                     _capturedPhoto != null ? '✅ Ada' : '⚠️ Tidak ada'),
               ],
